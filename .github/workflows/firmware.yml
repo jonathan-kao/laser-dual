@@ -1,0 +1,31 @@
+# Compiles every firmware file with mpy-cross, MicroPython's own bytecode
+# compiler, so syntax errors are caught without hardware. It does not run the
+# code: hardware behaviour was tested on the boards (see docs/design-doc.md).
+name: Firmware compile check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  mpy-cross:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # MicroPython 1.22 was the current release while the project was built
+      - run: pip install "mpy-cross==1.22.0.post1"
+      - name: Compile all firmware
+        run: |
+          status=0
+          while IFS= read -r f; do
+            if mpy-cross -o /tmp/out.mpy "$f"; then
+              echo "ok    $f"
+            else
+              echo "FAIL  $f"
+              status=1
+            fi
+          done < <(find firmware -name '*.py' | sort)
+          exit $status

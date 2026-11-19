@@ -1,5 +1,9 @@
 # Laser Dual
 
+[![Firmware compile check](https://github.com/jonathan-kao/laser-dual/actions/workflows/firmware.yml/badge.svg)](https://github.com/jonathan-kao/laser-dual/actions/workflows/firmware.yml)
+![MicroPython](https://img.shields.io/badge/MicroPython-v1.20%2B-2b2728?logo=micropython)
+![ESP32](https://img.shields.io/badge/ESP32-ESP--NOW-e7352c?logo=espressif&logoColor=white)
+
 A two-player laser tag system built on ESP32 microcontrollers and MicroPython.
 Each player has an IR tagger and a vest with IR receivers; a control unit with
 an LCD lets players pick a game mode and tagger presets, then coordinates the
@@ -13,6 +17,22 @@ Jonathan Kao and Noble (Yi-Tso) Huang, spring 2024.
   <em>Product sketch from the design document</em>
 </p>
 
+## Highlights
+
+- **Three networked ESP32 boards, no access point.** The control unit and both
+  taggers exchange a small text protocol over ESP-NOW, peer-to-peer.
+- **Event driven, no threads.** ESP-NOW receive callbacks and IR pin interrupts
+  let the radio and the IR decoder work alongside the main game loop.
+- **Measured, not assumed.** ESP-NOW send-plus-ACK latency was at most about
+  27 ms within 10 m, and the IR link worked at 8+ m (measurements in design
+  doc sections [4.2.7](docs/design-doc.md#427-specification-measurements) and
+  [4.3.7](docs/design-doc.md#437-specification-measurements)).
+- **Custom hardware.** Two 2-layer PCBs (control unit and tagger) designed in
+  EasyEDA, with schematics, Gerbers and BOMs in [`hardware/`](hardware). The
+  tagger board was fabricated; the demo itself ran on hand-wired dev boards.
+- **Documented end to end.** Full [design document](docs/design-doc.md),
+  message format spec and third-party attribution.
+
 ## My role
 
 I owned the **Game Software and ESP-NOW Connection** subsystem:
@@ -21,7 +41,8 @@ I owned the **Game Software and ESP-NOW Connection** subsystem:
   taggers ([message format](docs/esp-now-message-format.pdf)).
 - Wrote the control unit firmware ([`firmware/control_unit.py`](firmware/control_unit.py)):
   the LCD menu for mode / tagger / round selection, the game coordinator that
-  tracks player status and decides round and game ends, and connection retry.
+  tracks player status and decides round and game ends, and an initialization
+  retry loop (bypassed in this version, see [Known limitations](#known-limitations)).
 - Built the tagger-side ESP-NOW handling and game flow in
   [`firmware/tagger_1.py`](firmware/tagger_1.py) / [`tagger_2.py`](firmware/tagger_2.py)
   together with Noble Huang, who owned the IR and LED logic.
@@ -164,7 +185,8 @@ ESP32-WROOM-32E does not (GPIO 6-11 are its flash pins).
   with two changes: it uses the digit pins passed in by the tagger, and it no
   longer runs a demo on import. The file header lists both changes.
 - `control_unit.py` overrides the initialization ACK results so a game can
-  start with only one tagger online (used during testing and demos).
+  start with only one tagger online (used during testing and demos). This also
+  means the retry loop never triggers; removing the two override lines restores it.
 - Peer MAC addresses are hard-coded.
 - The firmware pin numbers do not match the PCB schematics in `hardware/`.
   The firmware was brought up on hand-wired boards (tagger 1 and tagger 2 even
