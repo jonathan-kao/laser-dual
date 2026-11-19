@@ -27,15 +27,19 @@ Jonathan Kao and Noble (Yi-Tso) Huang, spring 2024.
   27 ms within 10 m, and the IR link worked at 8+ m (measurements in design
   doc sections [4.2.7](docs/design-doc.md#427-specification-measurements) and
   [4.3.7](docs/design-doc.md#437-specification-measurements)).
-- **Custom hardware.** Two 2-layer PCBs (control unit and tagger) designed in
-  EasyEDA, with schematics, Gerbers and BOMs in [`hardware/`](hardware). The
-  tagger board was fabricated; the demo itself ran on hand-wired dev boards.
+- **Custom hardware.** I designed both 2-layer PCBs (control unit and tagger)
+  in EasyEDA, from schematic to Gerbers, BOM and pick-and-place, in
+  [`hardware/`](hardware). The tagger board was fabricated; the demo itself
+  ran on hand-wired dev boards.
 - **Documented end to end.** Full [design document](docs/design-doc.md),
   message format spec and third-party attribution.
 
 ## My role
 
-I owned the **Game Software and ESP-NOW Connection** subsystem:
+I owned the **Game Software and ESP-NOW Connection** subsystem and designed
+both PCBs.
+
+**Firmware and protocol**
 
 - Designed the ESP-NOW message protocol used between the control unit and the
   taggers ([message format](docs/esp-now-message-format.pdf)).
@@ -46,11 +50,26 @@ I owned the **Game Software and ESP-NOW Connection** subsystem:
 - Built the tagger-side ESP-NOW handling and game flow in
   [`firmware/tagger_1.py`](firmware/tagger_1.py) / [`tagger_2.py`](firmware/tagger_2.py)
   together with Noble Huang, who owned the IR and LED logic.
-- Designed the control unit PCB section for this subsystem (ESP32 module,
-  buttons, LCD connector); see the [schematic review](docs/schematic-review-game-software.pdf).
 
-The other subsystems (user interface, IR/LED, power) were owned by teammates;
-see [Team Structure](docs/design-doc.md#5-team-structure).
+**PCB design** (EasyEDA, [`hardware/`](hardware))
+
+- Drew the schematics and laid out both 2-layer boards, the control unit and
+  the tagger, and produced the BOMs, Gerbers and pick-and-place files for
+  fabrication and assembly.
+- Both boards are built around an ESP32-WROOM-32E with on-board programming
+  and power: CP2102N USB-to-UART, transistor auto-reset/boot circuit, USB ESD
+  protection, AMS1117 3.3 V regulator and USB or external 5 V input selection.
+  The control unit board also carries the four menu buttons (Select, Back,
+  Left, Right) and the LCD's 5 V connector; the tagger board adds a separate
+  peripheral section with the 74HC595 display driver and headers for the IR,
+  LED and button wiring.
+- Prepared a second control unit assembly option that leaves the ESP32 module,
+  buttons and connectors unpopulated for hand assembly.
+- See also my [schematic review](docs/schematic-review-game-software.pdf) for
+  the game software subsystem.
+
+The circuits for the other subsystems (user interface, IR/LED, power) were
+designed by their owners; see [Team Structure](docs/design-doc.md#5-team-structure).
 
 ## How it works
 
@@ -120,7 +139,7 @@ ESP-NOW send-plus-ACK latency was at most about 27 ms within 10 m.
 ### Hardware
 
 Custom 2-layer PCBs for the control unit and the tagger/vest, built around the
-ESP32-WROOM-32E module.
+ESP32-WROOM-32E module (designed by me in EasyEDA).
 
 <table>
   <tr>
