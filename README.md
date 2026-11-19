@@ -15,7 +15,6 @@ Jonathan Kao and Noble (Yi-Tso) Huang, spring 2024.
 ## Demo
 
 Clips and frames from the team's demo video of the prototype (spring 2024).
-The clips play in real time; people in the video are cropped out.
 
 <p align="center">
   <img src="docs/media/demo-setup.webp" alt="Setting up an Aiming game on the control unit LCD" width="48.8%">
