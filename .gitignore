@@ -1,3 +1,7 @@
 .DS_Store
 _archive/
 __pycache__/
+
+# Raw demo footage (shows other people); only processed frames/clips are published
+*.mp4
+*.mov

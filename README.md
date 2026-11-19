@@ -12,10 +12,25 @@ game over ESP-NOW and keeps score.
 Senior design project (Team 4) by Gavin Jay Gill, Pravin S. Jayatissa,
 Jonathan Kao and Noble (Yi-Tso) Huang, spring 2024.
 
-<p align="center">
-  <img src="docs/images/product-sketch.png" alt="Product sketch" width="560"><br>
-  <em>Product sketch from the design document</em>
-</p>
+## Demo
+
+Clips and frames from the team's demo video of the prototype (spring 2024).
+The clips play in real time; people in the video are cropped out.
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="50%"><img src="docs/media/demo-setup.webp" alt="Setting up an Aiming game on the control unit LCD"><br><em>Setting up a game on the control unit: mode, Tagger 1 preset (SWIFT), rounds, then the summary page</em></td>
+    <td align="center" valign="top" width="50%"><img src="docs/media/demo-aiming-score.webp" alt="Aiming mode score rising on the LCD"><br><em>Aiming mode: the score rises from 9 to 14 as shots hit the target board, then the final score is shown</em></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%"><img src="docs/media/tagger-prototype.jpg" alt="Tagger prototype"><br><em>Tagger prototype: dev-board electronics in the tagger housing, IR emitter in the yellow barrel</em></td>
+    <td align="center" valign="top" width="33%"><img src="docs/media/demo-winner.jpg" alt="Winner screen on the LCD"><br><em>End of a two-player game: the winner and rounds won</em></td>
+    <td align="center" valign="top" width="33%"><img src="docs/media/range-test-8m.jpg" alt="Tape measure at 8 m"><br><em>IR range test: the tape measure at 8 m</em></td>
+  </tr>
+</table>
 
 ## Highlights
 
@@ -29,9 +44,10 @@ Jonathan Kao and Noble (Yi-Tso) Huang, spring 2024.
   [4.3.7](docs/design-doc.md#437-specification-measurements)).
 - **Custom hardware.** I designed both 2-layer PCBs (control unit and tagger)
   in EasyEDA, from schematic to Gerbers, BOM and pick-and-place, in
-  [`hardware/`](hardware). The tagger board was fabricated. The firmware's pin
-  numbers match hand-wired dev boards rather than these PCBs (see
+  [`hardware/`](hardware). The tagger board was fabricated, but the demo
+  prototype ran on hand-wired dev boards (see
   [Known limitations](#known-limitations)).
+- **Shown working.** [Demo](#demo) clips and frames from the prototype.
 - **Documented end to end.** Full [design document](docs/design-doc.md),
   message format spec and third-party attribution.
 
@@ -74,6 +90,11 @@ The circuits for the other subsystems (user interface, IR/LED, power) were
 designed by their owners; see [Team Structure](docs/design-doc.md#5-team-structure).
 
 ## How it works
+
+<p align="center">
+  <img src="docs/images/product-sketch.png" alt="Product sketch" width="560"><br>
+  <em>Product sketch from the design document</em>
+</p>
 
 The control unit and the two taggers talk peer-to-peer over ESP-NOW (no Wi-Fi
 access point). The taggers shoot each other with NEC-encoded IR at 38 kHz.
@@ -169,6 +190,7 @@ hardware/
   tagger/                 Same for the tagger/vest board, plus a photo of the PCB
 docs/
   design-doc.md           Full design document
+  media/                  Demo clips and frames from the prototype video
   esp-now-message-format.pdf
   schematic-review-game-software.pdf
 ```
@@ -177,7 +199,7 @@ docs/
 
 Hardware: three ESP32 boards (control unit + two taggers), flashed with
 MicroPython v1.20 or newer (for the `espnow` module). The pin numbers in the
-firmware match hand-wired bench setups, not the PCB schematics (see
+firmware match the hand-wired prototype, not the PCB schematics (see
 [Known limitations](#known-limitations)). The taggers use classic ESP32 pins.
 The control unit uses GPIO 6-12, which rules out an ESP32-WROOM-32E (GPIO 6-11
 are its flash pins), so it most likely ran on an ESP32-S2 or S3 board.
@@ -211,14 +233,14 @@ are its flash pins), so it most likely ran on an ESP32-S2 or S3 board.
   testing). The retry loop therefore never triggers; removing the two override
   lines restores it.
 - Peer MAC addresses are hard-coded.
-- The firmware pin numbers do not match the PCB schematics in `hardware/`, so
-  the code was most likely brought up on hand-wired dev boards (tagger 1 and
-  tagger 2 even use different display pins, which identical PCBs would not
-  allow). Running it on the PCBs would need the pin constants at the top of each
-  file updated; the vest IR receiver pins (36 and 39) already match. For
-  example, the tagger PCB routes the 74HC595 data/latch/clock to IO4/IO2/IO0 and
-  the digit selects to IO15/IO27/IO14/IO13, while `tagger_1.py` uses 21/27/26
-  and 13/2/12/19.
+- The firmware pin numbers do not match the PCB schematics in `hardware/`. The
+  demo video shows the prototype running on hand-wired dev boards: a
+  breadboarded control unit and tagger electronics wired inside the housing.
+  Tagger 1 and tagger 2 even use different display pins. Running the firmware on
+  the PCBs would need the pin constants at the top of each file updated; the
+  vest IR receiver pins (36 and 39) already match. For example, the tagger PCB
+  routes the 74HC595 data/latch/clock to IO4/IO2/IO0 and the digit selects to
+  IO15/IO27/IO14/IO13, while `tagger_1.py` uses 21/27/26 and 13/2/12/19.
 
 ## Credits
 

@@ -27,6 +27,6 @@ so GitHub may not preview them. Open them in a spreadsheet program.
 
 ## Firmware pin mapping
 
-The firmware in [`firmware/`](../firmware) uses the pin numbers of hand-wired
-bench setups, not these boards, so it would need its pin constants updated to
-run on them. See [Known limitations](../README.md#known-limitations).
+The firmware in [`firmware/`](../firmware) uses the pin numbers of the
+hand-wired prototype shown in the demo, not these boards, so it would need its
+pin constants updated to run on them. See [Known limitations](../README.md#known-limitations).
