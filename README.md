@@ -18,16 +18,16 @@ Clips and frames from the team's demo video of the prototype (spring 2024).
 The clips play in real time; people in the video are cropped out.
 
 <p align="center">
-  <img src="docs/media/demo-setup.webp" alt="Setting up an Aiming game on the control unit LCD" width="49%">
-  <img src="docs/media/demo-aiming-score.webp" alt="Aiming mode score rising on the LCD" width="49%"><br>
+  <img src="docs/media/demo-setup.webp" alt="Setting up an Aiming game on the control unit LCD" width="48.8%">
+  <img src="docs/media/demo-aiming-score.webp" alt="Aiming mode score rising on the LCD" width="48.8%"><br>
   <em>Left: game setup on the control unit (mode, Tagger 1 preset, rounds, summary).
   Right: Aiming mode, the score rising from 9 to 14 as shots hit the target board.</em>
 </p>
 
 <p align="center">
-  <img src="docs/media/tagger-prototype.jpg" alt="Tagger prototype" width="32.5%">
-  <img src="docs/media/demo-winner.jpg" alt="Winner screen on the LCD" width="32.5%">
-  <img src="docs/media/range-test-8m.jpg" alt="Tape measure at 8 m" width="32.5%"><br>
+  <img src="docs/media/tagger-prototype.jpg" alt="Tagger prototype" width="32.3%">
+  <img src="docs/media/demo-winner.jpg" alt="Winner screen on the LCD" width="32.3%">
+  <img src="docs/media/range-test-8m.jpg" alt="Tape measure at 8 m" width="32.3%"><br>
   <em>Left to right: the tagger prototype (IR emitter in the yellow barrel), the winner
   screen after a two-player game, and the IR range test at 8 m.</em>
 </p>
