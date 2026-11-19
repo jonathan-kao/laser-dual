@@ -1,12 +1,14 @@
 # Laser Dual - Design Document
 
-**Team 4:** Gavin Jay Gill, Pravin S. Jayatissa, Jonathan Kao, Noble (Yi-Tso) Huang
-**TA:** Shengtai Ju | **Professor:** Ryan Beasley
+**Team 4:** Gavin Jay Gill, Pravin S. Jayatissa, Jonathan Kao, Noble (Yi-Tso) Huang\
+**TA:** Shengtai Ju | **Professor:** Ryan Beasley\
 **Revision:** 5 (2024-04-26)
 
 > This is a Markdown version of the team's final design document (originally a PDF).
-> Content is kept as written; formatting was cleaned up, and the team members'
-> photos and contact details were left out.
+> The content is kept as written, except for one correction marked inline in
+> section 4.2. Formatting was cleaned up, figures were cropped from the PDF pages,
+> captions were added to figures that had none, and the team members' photos and
+> contact details were left out.
 
 <p align="center">
   <img src="images/product-sketch.png" alt="Product sketch" width="560"><br>

@@ -1,9 +1,9 @@
 # =============================================================================
-# Laser Dual - Control Unit firmware (MicroPython, ESP32-WROOM-32E)
+# Laser Dual - Control Unit firmware (MicroPython, ESP32)
 #
 # Responsibilities:
 #   1. Game setup UI: walk the player through mode / tagger / round selection
-#      on a 16x2 I2C LCD using five push buttons.
+#      on a 16x2 I2C LCD using four push buttons (Left, Right, Select, Back).
 #   2. Game coordinator: broadcast game parameters to both taggers over
 #      ESP-NOW, track each player's status, decide when a round / the game
 #      ends, and show scores on the LCD.
@@ -26,7 +26,8 @@ import espnow
 import time
 
 # ========================== Third-party code ==========================
-# 'lcd_api.py', 'i2c_lcd.py' (copied unmodified into firmware/lib/)
+# 'lcd_api.py', 'i2c_lcd.py' in firmware/lib/ (code unmodified; i2c_lcd.py is
+# upstream lcd/machine_i2c_lcd.py, renamed)
 # Author: Dave Hylands
 # Repository: https://github.com/dhylands/python_lcd
 # License: The MIT License (MIT)
@@ -80,7 +81,8 @@ espnow.add_peer(peer2)
 i2c = SoftI2C(scl=Pin(9), sda=Pin(8), freq=100000)
 lcd = I2cLcd(i2c, 0x27, 2, 16)
 
-# Navigation buttons: active low (internal pull-up, pressed = 0)
+# Navigation buttons: active low (internal pull-up, pressed = 0).
+# 'start' is configured but the menu loop below never acts on it.
 buttons = {
     'left': Pin(12, Pin.IN, Pin.PULL_UP),
     'right': Pin(6, Pin.IN, Pin.PULL_UP),
@@ -410,8 +412,8 @@ class GameLogic:
                 print("==========================\nRetrying...\n")
             ack1 = espnow.send(peer1, f"0 {self.game_mode} {self.tagger_1} {self.tagger_2} {self.rnd} ", True)
             ack2 = espnow.send(peer2, f"0 {self.game_mode} {self.tagger_1} {self.tagger_2} {self.rnd} ", True)
-            # NOTE: ACK results are overridden so the game can start even when
-            # a tagger is offline (used for single-tagger testing and demos).
+            # NOTE: ACK results are overridden, so the game starts even when a
+            # tagger is offline (most likely left in from single-tagger testing).
             ack2 = True
             ack1 = True
             print(f"Initialization Sent {retry}")

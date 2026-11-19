@@ -29,8 +29,9 @@ Jonathan Kao and Noble (Yi-Tso) Huang, spring 2024.
   [4.3.7](docs/design-doc.md#437-specification-measurements)).
 - **Custom hardware.** I designed both 2-layer PCBs (control unit and tagger)
   in EasyEDA, from schematic to Gerbers, BOM and pick-and-place, in
-  [`hardware/`](hardware). The tagger board was fabricated; the demo itself
-  ran on hand-wired dev boards.
+  [`hardware/`](hardware). The tagger board was fabricated. The firmware's pin
+  numbers match hand-wired dev boards rather than these PCBs (see
+  [Known limitations](#known-limitations)).
 - **Documented end to end.** Full [design document](docs/design-doc.md),
   message format spec and third-party attribution.
 
@@ -63,8 +64,9 @@ both PCBs.
   Left, Right) and the LCD's 5 V connector; the tagger board adds a separate
   peripheral section with the 74HC595 display driver and headers for the IR,
   LED and button wiring.
-- Prepared a second control unit assembly option that leaves the ESP32 module,
-  buttons and connectors unpopulated for hand assembly.
+- Prepared a second control unit BOM and pick-and-place set that leaves the
+  ESP32 module, menu buttons, pin headers and LCD connector off the factory
+  assembly.
 - See also my [schematic review](docs/schematic-review-game-software.pdf) for
   the game software subsystem.
 
@@ -78,7 +80,7 @@ access point). The taggers shoot each other with NEC-encoded IR at 38 kHz.
 
 ```mermaid
 flowchart LR
-    CU["<b>Control unit</b><br/>ESP32 · 16x2 LCD · 5 buttons"]
+    CU["<b>Control unit</b><br/>ESP32 · 16x2 LCD · 4 buttons"]
     T1["<b>Tagger 1 + vest</b><br/>IR TX · 2x IR RX<br/>LEDs · 7-seg display"]
     T2["<b>Tagger 2 + vest</b><br/>IR TX · 2x IR RX<br/>LEDs · 7-seg display"]
     CU <-->|ESP-NOW| T1
@@ -92,6 +94,10 @@ flowchart LR
 | 3 | Player Status | Taggers to control unit | `3 <hp> <cells>` |
 | 4 | Round Start | Control unit to taggers | `4 <round>` |
 | 5 | Round End | Control unit to taggers | `5 <round>` |
+
+The [message format spec](docs/esp-now-message-format.pdf) also defines a
+**[2] Initialization Acknowledgement**; the firmware does not use it and relies
+on ESP-NOW's built-in delivery ACK instead.
 
 A game runs like this:
 
@@ -115,10 +121,6 @@ sequenceDiagram
 
 A player can also end the game early with the End button: the tagger sends
 **[1] Game Conclusion**, and the control unit forwards it to both taggers.
-
-Messages are handled in ESP-NOW receive callbacks and IR decoding runs from pin
-interrupts, so the radio and IR work at the same time without threads. Measured
-ESP-NOW send-plus-ACK latency was at most about 27 ms within 10 m.
 
 ### Game modes
 
@@ -162,6 +164,7 @@ firmware/
   display/display.py      7-segment display driver used by the taggers (UI subsystem)
   tools/print_mac_addr.py Print a board's MAC address for the ESP-NOW peer list
 hardware/
+  README.md               Guide to the board files
   control-unit/           Schematic, PCB layout, 3D render, Gerbers, BOM, pick-and-place
   tagger/                 Same for the tagger/vest board, plus a photo of the PCB
 docs/
@@ -174,10 +177,10 @@ docs/
 
 Hardware: three ESP32 boards (control unit + two taggers), flashed with
 MicroPython v1.20 or newer (for the `espnow` module). The pin numbers in the
-firmware match the bench wiring used for the demo, not the PCB schematics (see
-[Known limitations](#known-limitations)): the taggers use classic ESP32 pins,
-and the control unit uses GPIO 6-12, which an ESP32-S2/S3 board allows but an
-ESP32-WROOM-32E does not (GPIO 6-11 are its flash pins).
+firmware match hand-wired bench setups, not the PCB schematics (see
+[Known limitations](#known-limitations)). The taggers use classic ESP32 pins.
+The control unit uses GPIO 6-12, which rules out an ESP32-WROOM-32E (GPIO 6-11
+are its flash pins), so it most likely ran on an ESP32-S2 or S3 board.
 
 1. Run `firmware/tools/print_mac_addr.py` on each board and update the peer MAC
    addresses at the top of `control_unit.py`, `tagger_1.py` and `tagger_2.py`.
@@ -203,16 +206,19 @@ ESP32-WROOM-32E does not (GPIO 6-11 are its flash pins).
   taggers was not kept, so it was rebuilt from the surviving bench-test driver
   with two changes: it uses the digit pins passed in by the tagger, and it no
   longer runs a demo on import. The file header lists both changes.
-- `control_unit.py` overrides the initialization ACK results so a game can
-  start with only one tagger online (used during testing and demos). This also
-  means the retry loop never triggers; removing the two override lines restores it.
+- `control_unit.py` overrides the initialization ACK results, so a game starts
+  even with only one tagger online (most likely left in from single-tagger
+  testing). The retry loop therefore never triggers; removing the two override
+  lines restores it.
 - Peer MAC addresses are hard-coded.
-- The firmware pin numbers do not match the PCB schematics in `hardware/`.
-  The firmware was brought up on hand-wired boards (tagger 1 and tagger 2 even
-  use different display pins), so running it on the PCBs would need the pin
-  constants at the top of each file updated. For example, the tagger PCB routes
-  the 74HC595 data/latch/clock to IO4/IO2/IO0 and the digit selects to
-  IO15/IO27/IO14/IO13, while `tagger_1.py` uses 21/27/26 and 13/2/12/19.
+- The firmware pin numbers do not match the PCB schematics in `hardware/`, so
+  the code was most likely brought up on hand-wired dev boards (tagger 1 and
+  tagger 2 even use different display pins, which identical PCBs would not
+  allow). Running it on the PCBs would need the pin constants at the top of each
+  file updated; the vest IR receiver pins (36 and 39) already match. For
+  example, the tagger PCB routes the 74HC595 data/latch/clock to IO4/IO2/IO0 and
+  the digit selects to IO15/IO27/IO14/IO13, while `tagger_1.py` uses 21/27/26
+  and 13/2/12/19.
 
 ## Credits
 

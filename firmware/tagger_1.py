@@ -1,5 +1,5 @@
 # =============================================================================
-# Laser Dual - Tagger 1 (Player 1) firmware (MicroPython, ESP32-WROOM-32E)
+# Laser Dual - Tagger 1 (Player 1) firmware (MicroPython, ESP32)
 #
 # Each tagger/vest set has its own ESP32 that:
 #   - fires NEC-encoded IR bursts when the trigger is held,
@@ -28,7 +28,7 @@ import network
 import espnow
 import time
 from ir_tx.nec import NEC        # Third-party: peterhinch/micropython_ir (MIT)
-from ir_rx.nec import NEC_8      # Third-party: peterhinch/micropython_ir (MIT)
+from ir_rx.nec import NEC_8      # Third-party: peterhinch/micropython_ir (MIT), one-line change, see THIRD_PARTY_NOTICES.md
 import urandom
 from display.display import disp7S   # 7-segment driver from the UI subsystem
 ##########################################################################
@@ -241,7 +241,8 @@ class GameLogic:
         self.round_end = False
 
         # Damage taken per hit depends on the opponent's tagger.
-        # 0 means no opponent preset (Showdown): one hit removes all 4 HP.
+        # 0 means no preset was selected: Showdown sends 0 for both taggers,
+        # so one hit removes all 4 HP (Aiming also sends 0 for Tagger 2).
         if tagger_2 == 1:
             self.tagger_2_demage = 1
         elif tagger_2 == 2:
